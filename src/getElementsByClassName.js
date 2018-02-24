@@ -1,68 +1,40 @@
 // If life was easy, we could just do things the easy way:
 // var getElementsByClassName = function (className) {
-//   return document.getElementsByClassName(className);
+//   return document.`(className);
 // };
 
 // But instead we're going to implement it from scratch:
-var getElementsByClassName = function(className) {
-	var body = document.body; //returns the body of the current document
-    var classNameArray = [];
+var getElementsByClassName = function(className, element) { 
+  var nodeList = []; //HTML collection, list of nodes, not an array
+   //this would be an HTML collection example
+  
+  element = element || document.body;
 
-    var addToClassNameArray = function(element) {
-      var classList = element.classList; //returns a live DOMTokenList (space separated token) collection of the class attributes of the element
-      if (classList !== undefined && classList.contains(className) === true) {
-        classNameArray.push(className);
-	  }
-    };
+  var classList = element.classList;
+  if (classList && classList.contains(className)) {
+    nodeList.push(element);
+  }
 
-    var checkNodesWithRecursiveLoop = function(element) { //check first children, then body
-      var children = element.childNodes;
-      if (children === undefined) {
-        getElementsByClassName()
-      }
-
-      
-      //for (var i = 0; i < children.length; i++) {
-        
-      //}
-    }
-
-    
-
-    //test nodes with a recursive function
-    //why? is document.body a node? why doesn't this test everything?
-	
-	//Returns an array-like object of all child elements which have all of the given class names. 
-    //need a base case, since recursion
-    //then, need a way to call getElementsByClassName(className) again
-
-	 
-    //why would I need this? need to specify that I'm searching within the body
-
-	 //returns live collection of the child nodes of given element, where first node is assigned index 0;
-	//do I need to check to see if element HAS childnodes? mdn
-
-    return classNameArray;
-
-    //can either call getElements on an element or the body, which will search everything
-
+  var children = element.childNodes;
+  for (var i = 0; i < children.length; i++) {
+    var childElements = getElementsByClassName(className, children[i]);
+    nodeList = nodeList.concat(childElements);
+  }
+  return nodeList; //return an array (technically should be an array-like object)
 };
 
-//document.body, element.childNodes, and element.classList
+//use document.body, element.childNodes, and element.classList
 
-/*
- $('body').addClass('targetClassName');
-htmlStrings.forEach(function(htmlString) {
-  var $rootElement = $(htmlString);
-  $('body').append($rootElement);
+/* Test Cases
 
-  var result = getElementsByClassName('targetClassName');
-  var expectedNodeList = document.getElementsByClassName('targetClassName');
-  var expectedArray = Array.prototype.slice.apply(expectedNodeList);
-  var equality = _.isEqual(result, expectedArray); // why can't we use `===` here?
-  expect(equality).to.equal(true);
+var htmlStrings = [
+  '<div class="targetClassName"></div>',
+  '<div class="otherClassName targetClassName"></div>',
+  '<div><div class="targetClassName"></div></div>',
+  '<div><div class="targetClassName"><div class="targetClassName"></div></div></div>',
+  '<div><div></div><div><div class="targetClassName"></div></div></div>',
+  '<div><div class="targetClassName"></div><div class="targetClassName"></div></div>',
+  '<div><div class="somediv"><div class="innerdiv"><span class="targetClassName">yay</span></div></div></div>'
+];
 
-  $rootElement.remove();
-});
-$('body').removeClass('targetClassName');
 */
